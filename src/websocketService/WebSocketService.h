@@ -21,7 +21,6 @@ class WebSocketService
 public:
     WebSocketService();
     ~WebSocketService();
-    void run();
     // std::string getCurrentPath() const;
 
     void addPathHandler(std::function<void(const std::string &)> handler);

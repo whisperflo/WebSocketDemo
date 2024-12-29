@@ -35,6 +35,10 @@ WebSocketService::WebSocketService()
         {
             std::lock_guard<std::mutex> lock(m_connectionsMutex);
             m_connections[path].erase(hdl);
+            if (m_connections[path].empty())
+            {
+                m_connections.erase(path);
+            }
         }
         std::cout << "Connection closed on path: " << path << std::endl;
         std::cout << "Current connection count: " << getConnectionCount() << std::endl; });

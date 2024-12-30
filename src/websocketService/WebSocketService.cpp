@@ -16,6 +16,8 @@ WebSocketService::WebSocketService()
         std::string currentPath = con->get_resource(); // 获取路径
         std::cout << "New connection on path: " << currentPath << std::endl;
 
+        isConnected[currentPath] = true;
+
         {
             std::lock_guard<std::mutex> lock(m_connectionsMutex);
             m_connections[currentPath].insert(hdl);
@@ -33,6 +35,8 @@ WebSocketService::WebSocketService()
         std::string path = con->get_resource();
 
         {
+            Logger &logger = Logger::getInstance("./log");
+            logger.debug("Connection closed on hdl: " + path);
             std::lock_guard<std::mutex> lock(m_connectionsMutex);
             m_connections[path].erase(hdl);
             if (m_connections[path].empty())
@@ -105,6 +109,7 @@ void WebSocketService::send(const std::string &path, const std::string &message)
     auto it = m_connections.find(path);
     if (it != m_connections.end())
     {
+        isConnected[path] = true;
         for (const auto &hdl : it->second)
         {
             try
@@ -120,7 +125,7 @@ void WebSocketService::send(const std::string &path, const std::string &message)
     }
     else
     {
-        std::cerr << "No connections found for path " << path << std::endl;
+        isConnected[path] = false;
     }
 }
 size_t WebSocketService::getConnectionCount() const
@@ -133,6 +138,13 @@ size_t WebSocketService::getConnectionCount() const
     }
     return count;
 }
+bool WebSocketService::getConnectionStatus(const std::string &path) const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    auto it = isConnected.find(path);
+    return it != isConnected.end() ? it->second : false; // 如果路径不存在，返回 false
+}
+
 /* std::string WebSocketService::getCurrentPath() const
 {
     return currentPath;

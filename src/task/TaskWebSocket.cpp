@@ -8,6 +8,7 @@
 
 TaskWebSocket::TaskWebSocket(std::shared_ptr<WebSocketService> service) : service_(service)
 {
+    isStopThread = false;
     // 初始化 WSWorkLayerImp 实例，用于具体路径处理逻辑
     ptr_wsWork = new WSWorkLayerImp(service_);
 
@@ -26,7 +27,11 @@ TaskWebSocket::~TaskWebSocket()
 
     // 设置停止标志并通知所有等待线程
     isStopThread = true;
-
+    // 设置所有路径的停止标志
+    for (auto &flag : stopFlags)
+    {
+        flag.second = true;
+    }
     // 等待所有异步任务完成
     for (auto &fut : futures)
     {
@@ -46,7 +51,7 @@ void TaskWebSocket::handlePath(const std::string &path)
 {
     std::cout << "[TaskWebSocket] Handling path: " << path << std::endl;
 
-    while (!isStopThread && !stopFlags[path])
+    while (!isStopThread && service_->getConnectionStatus(path))
     {
         // 处理任务
         ptr_wsWork->handlePath(path);
@@ -54,14 +59,5 @@ void TaskWebSocket::handlePath(const std::string &path)
         // 模拟数据推送，每秒推送一次
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         std::cout << "[TaskWebSocket] Data pushed for path: " << path << std::endl;
-    }
-}
-
-void TaskWebSocket::stopPath(const std::string &path)
-{
-    std::lock_guard<std::mutex> lock(pathMutex);
-    if (stopFlags.find(path) != stopFlags.end())
-    {
-        stopFlags[path] = true;
     }
 }

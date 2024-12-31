@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <set>
 #include <thread>
+#include <unistd.h>      // 提供pid_t类型定义
+#include <sys/syscall.h> // 提供SYS_gettid的定义
 #include <functional>
 #include <vector>
 #include "../Log/logger.h"
@@ -23,7 +25,7 @@ public:
     void send(const std::string &path, const std::string &message);
     void addPathHandler(std::function<void(const std::string &)> handler);
     bool getConnectionStatus(const std::string &path) const;
-    size_t getConnectionCount() const;
+    // size_t getConnectionCount() const;
 
 private:
     std::unordered_map<std::string, std::set<connection_hdl, std::owner_less<connection_hdl>>> m_connections;

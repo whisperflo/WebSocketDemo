@@ -7,8 +7,7 @@ WSWorkLayerImp::WSWorkLayerImp(std::shared_ptr<WebSocketService> service) : serv
                              {
                                 //  processData();
 
-                                 processData(path);
-                                  });
+                                 processData(path); });
 }
 
 /* void WSWorkLayerImp::processData()
@@ -63,7 +62,9 @@ void WSWorkLayerImp::handlePath(const std::string &path)
 
     case BMSDATA:
         // 处理 /bmsData 路径的功能
-        std::cout << "BMSDATA" << std::endl;
+        sendBmsOverViewData(payloadStream);
+        str = payloadStream.str();
+        service_->send(path, str);
         break;
 
     case PCSSTATUS:
@@ -164,4 +165,39 @@ void WSWorkLayerImp::assemblePcsOverViewData(std::vector<PCS> group1, std::vecto
 
     // 将JSON对象转化为字符串，并写入到payloadStream
     payloadStream << pcsData.dump(4); // 使用4个空格缩进格式化JSON
+}
+
+void WSWorkLayerImp::sendBmsOverViewData(std::ostringstream &payloadStream)
+{
+
+    // 模拟24台pcs的数据
+    // 模拟第一组数据
+    std::vector<PCS> group1 = {
+        {"BMS 1", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 2", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 3", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 4", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 5", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 6", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 7", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 8", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 9", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 10", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 11", "errow", {{"0", "kW"}, {"0", "kW"}, {"Shutdown", ""}, {"Grid loss", ""}}},
+        {"BMS 12", "errow", {{"0", "kW"}, {"0", "kW"}, {"Shutdown", ""}, {"Grid loss", ""}}}};
+    // 模拟第二组设备
+    std::vector<PCS> group2 = {
+        {"BMS 13", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 14", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 15", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 16", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 17", "errow", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 18", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 19", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 20", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 21", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 22", "", {{"215.1", "kW"}, {"215.1", "kW"}, {"Run", ""}, {"No", ""}}},
+        {"BMS 23", "errow", {{"0", "kW"}, {"0", "kW"}, {"Shutdown", ""}, {"Grid loss", ""}}},
+        {"BMS 24", "errow", {{"0", "kW"}, {"0", "kW"}, {"Shutdown", ""}, {"Grid loss", ""}}}};
+    assemblePcsOverViewData(group1, group2, payloadStream);
 }

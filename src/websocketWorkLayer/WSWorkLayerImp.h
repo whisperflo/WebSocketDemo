@@ -16,7 +16,9 @@ public:
     PathType getPathType(const std::string &path);
     void handlePath(const std::string &path);
     void assemblePcsOverViewData(std::vector<PCS> group1, std::vector<PCS> group2, std::ostringstream &payloadStream);
+    // void assembleBmsOverViewData(std::vector<PCS> group1, std::vector<PCS> group2, std::ostringstream &payloadStream);
     void sendPcsOverViewData(std::ostringstream &payloadStream);
+    void sendBmsOverViewData(std::ostringstream &payloadStream);
 
 private:
     std::shared_ptr<WebSocketService> service_;
